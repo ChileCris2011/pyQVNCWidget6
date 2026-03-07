@@ -409,7 +409,7 @@ class RFBClient:
     # ------------------------------------------------------------------
 
     def startConnection(self):
-        self._mainLoop = Thread(target=self.__start)
+        self._mainLoop = Thread(target=self.__start, daemon=True)
         self._mainLoop.start()
     
     def sendPassword(self, password):
