@@ -1,6 +1,6 @@
 [project]
 name = "qvncwidget6"
-version = "0.1.4"
+version = "1.0.5"
 description = "VNC Qt Widget for Python using PyQt6"
 authors = [
     { name = "zocker_160", email = "zocker1600@posteo.net"},
