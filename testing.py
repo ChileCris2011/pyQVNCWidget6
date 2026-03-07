@@ -3,8 +3,8 @@
 import sys
 import logging
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtGui import QKeyEvent
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtGui import QKeyEvent
 #from qvncwidget import QVNCWidget
 from qvncwidget.qvncwidget import QVNCWidget, QVNCWidgetGL
 
@@ -24,8 +24,7 @@ class Window(QMainWindow):
         self.vnc = QVNCWidget(
             parent=self,
             host="127.0.0.1", port=5900,
-            password="1234",
-            readOnly=True
+            readOnly=False
         )
         
         self.setCentralWidget(self.vnc)
@@ -63,4 +62,4 @@ window.resize(800, 600)
 window.center()
 window.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())

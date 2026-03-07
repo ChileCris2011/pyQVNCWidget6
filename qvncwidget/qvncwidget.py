@@ -8,13 +8,13 @@ licensed under GPLv3
 import logging
 import time
 
-from PyQt5.QtCore import (
+from PyQt6.QtCore import (
     QSize,
     Qt,
     pyqtSignal,
     QSemaphore
 )
-from PyQt5.QtGui import (
+from PyQt6.QtGui import (
     QImage,
     QPaintEvent,
     QPainter,
@@ -26,12 +26,13 @@ from PyQt5.QtGui import (
     QMouseEvent
 )
 
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QWidget,
     QLabel,
-    QWidget,
-    QOpenGLWidget
+    QWidget
 )
+
+from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 
 from qvncwidget.rfb import RFBClient
 from qvncwidget.rfbhelpers import RFBPixelformat, RFBInput
@@ -142,8 +143,8 @@ class QVNCWidget(QWidget, RFBClient):
         self.pointerEvent(*self._getRemoteRel(ev), self.mouseButtonMask)
 
     def _getRemoteRel(self, ev: QMouseEvent) -> tuple:
-        xPos = (ev.localPos().x() / self.frontbuffer.width()) * self.vncWidth
-        yPos = (ev.localPos().y() / self.frontbuffer.height()) * self.vncHeight
+        xPos = (ev.position().x() / self.frontbuffer.width()) * self.vncWidth
+        yPos = (ev.position().y() / self.frontbuffer.height()) * self.vncHeight
 
         return int(xPos), int(yPos)
 
@@ -162,7 +163,7 @@ class QVNCWidget(QWidget, RFBClient):
 
 class QVNCWidgetGL(QOpenGLWidget, RFBClient):
 
-    IMG_FORMAT = QImage.Format_RGB32
+    IMG_FORMAT = QImage.Format.Format_RGB32
 
     onInitialResize = pyqtSignal(QSize)
     #onUpdatePixmap = pyqtSignal(int, int, int, int, bytes)
@@ -383,7 +384,7 @@ class QVNCWidgetGL(QOpenGLWidget, RFBClient):
         return super().resizeEvent(a0)
 
     def mousePressEvent(self, ev: QMouseEvent):
-        #print(ev.localPos(), ev.button())
+        #print(ev.position(), ev.button())
         #print(self.height() - self.pixmap().height())
 
         if self.acceptMouseEvents: # need pixmap instance
@@ -409,7 +410,7 @@ class QVNCWidgetGL(QOpenGLWidget, RFBClient):
 
         # y coord is kinda fucked up
         yDiff = (self.height() - self.pixmap().height()) / 2
-        yPos = ev.localPos().y() - yDiff
+        yPos = ev.position().y() - yDiff
         if yPos < 0: yPos = 0
         if yPos > self.pixmap().height(): yPos = self.pixmap().height()
 
@@ -418,7 +419,7 @@ class QVNCWidgetGL(QOpenGLWidget, RFBClient):
 
         # x coord is kinda fucked up, too
         xDiff = (self.width() - self.pixmap().width()) / 2
-        xPos = ev.localPos().x() - xDiff
+        xPos = ev.position().x() - xDiff
         if xPos < 0: xPos = 0
         if xPos > self.pixmap().width(): xPos = self.pixmap().width()
 
@@ -446,7 +447,7 @@ class QVNCWidgetGL(QOpenGLWidget, RFBClient):
 
 class QVNCWidget_old(QLabel, RFBClient):
     
-    IMG_FORMAT = QImage.Format_RGB32
+    IMG_FORMAT = QImage.Format.Format_RGB32
 
     onInitialResize = pyqtSignal(QSize)
     onUpdatePixmap = pyqtSignal(int, int, int, int, bytes)
@@ -470,7 +471,7 @@ class QVNCWidget_old(QLabel, RFBClient):
         self.screen: QImage = None
 
         # FIXME: The pixmap is assumed to be aligned center.
-        self.setAlignment(Qt.AlignCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.onUpdatePixmap.connect(self._updateImage)
         self.onSetPixmap.connect(self._setImage)
@@ -636,7 +637,7 @@ class QVNCWidget_old(QLabel, RFBClient):
         return super().resizeEvent(a0)
 
     def mousePressEvent(self, ev: QMouseEvent):
-        #print(ev.localPos(), ev.button())
+        #print(ev.position(), ev.button())
         #print(self.height() - self.pixmap().height())
 
         if self.acceptMouseEvents: # need pixmap instance
@@ -662,7 +663,7 @@ class QVNCWidget_old(QLabel, RFBClient):
 
         # y coord is kinda fucked up
         yDiff = (self.height() - self.pixmap().height()) / 2
-        yPos = ev.localPos().y() - yDiff
+        yPos = ev.position().y() - yDiff
         if yPos < 0: yPos = 0
         if yPos > self.pixmap().height(): yPos = self.pixmap().height()
 
@@ -671,7 +672,7 @@ class QVNCWidget_old(QLabel, RFBClient):
 
         # x coord is kinda fucked up, too
         xDiff = (self.width() - self.pixmap().width()) / 2
-        xPos = ev.localPos().x() - xDiff
+        xPos = ev.position().x() - xDiff
         if xPos < 0: xPos = 0
         if xPos > self.pixmap().width(): xPos = self.pixmap().width()
 

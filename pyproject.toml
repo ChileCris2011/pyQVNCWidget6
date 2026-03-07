@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "QVncWidget"
-version = "0.3.5"
-description = "VNC QT Widget for Python using PyQt5"
+name = "QVncWidget6"
+version = "0.1.0"
+description = "VNC QT Widget for Python using PyQt6"
 authors = ["zocker_160 <zocker1600@posteo.net>"]
 license = "GPLv3+"
 readme = "README.md"
-repository = "https://github.com/zocker-160/pyQVNCWidget"
+repository = "https://github.com/ChileCris2011/pyQVNCWidget6"
 
 [tool.poetry.dependencies]
 python = "^3.7"
