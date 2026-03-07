@@ -1,13 +1,17 @@
 # pyQVNCWidget
-VNC Widget for Python using PyQt5
+
+VNC Widget for Python using PyQt6
+
+This is a fork of [zocker-160/pyQVNCWidget](https://github.com/zocker-160/pyQVNCWidget), which updates the package to use PyQt6 instead of PyQt5.
 
 ## How to install
 
 ```bash
-pip3 install qvncwidget
+pip3 install qvncwidget6
 ```
 
-### TODO:
+### TODO from pyQVNCWidget
+
 - Proper error handling `onFatalError`
 - support for more than just RAW and RGB32 PIXEL_FORMATs
 - support for compression
@@ -18,12 +22,12 @@ pip3 install qvncwidget
 
 ```python
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from qvncwidget import QVNCWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from qvncwidget6 import QVNCWidget
 
 class Window(QMainWindow):
     def __init__(self):
-        super(Window, self).__init__()
+        super().__init__()
 
         self.setWindowTitle("QVNCWidget")
 
@@ -51,19 +55,19 @@ window = Window()
 window.resize(800, 600)
 window.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())
 ```
 
 ### Example with widget input events
 
 ```python
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from qvncwidget import QVNCWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from qvncwidget6 import QVNCWidget
 
 class Window(QMainWindow):
     def __init__(self):
-        super(Window, self).__init__()
+        super().__init__()
 
         self.setWindowTitle("QVNCWidget")
 
@@ -92,7 +96,7 @@ window = Window()
 window.resize(800, 600)
 window.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())
 ```
 
 ### Example with window input events
@@ -101,12 +105,12 @@ In this example we are passing input events from the window to the widget
 
 ```python
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from qvncwidget import QVNCWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from qvncwidget6 import QVNCWidget
 
 class Window(QMainWindow):
     def __init__(self):
-        super(Window, self).__init__()
+        super().__init__()
 
         self.setWindowTitle("QVNCWidget")
 
@@ -141,10 +145,11 @@ window = Window()
 window.resize(800, 600)
 window.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())
 ```
 
 ## References
 
-- https://datatracker.ietf.org/doc/html/rfc6143
-- https://vncdotool.readthedocs.io/en/0.8.0/rfbproto.html?highlight=import#string-encodings
+- <https://datatracker.ietf.org/doc/html/rfc6143>
+- <https://vncdotool.readthedocs.io/en/0.8.0/rfbproto.html?highlight=import#string-encodings>
+- <https://github.com/zocker-160/pyQVNCWidget>

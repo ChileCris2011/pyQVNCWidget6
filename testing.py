@@ -6,7 +6,7 @@ import logging
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtGui import QKeyEvent
 #from qvncwidget import QVNCWidget
-from qvncwidget.qvncwidget import QVNCWidget, QVNCWidgetGL
+from qvncwidget6.qvncwidget6 import QVNCWidget, QVNCWidgetGL
 
 log = logging.getLogger("testing")
 

@@ -34,8 +34,8 @@ from PyQt6.QtWidgets import (
 
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 
-from qvncwidget.rfb import RFBClient
-from qvncwidget.rfbhelpers import RFBPixelformat, RFBInput
+from qvncwidget6.rfb import RFBClient
+from qvncwidget6.rfbhelpers import RFBPixelformat, RFBInput
 
 log = logging.getLogger("QVNCWidget")
 

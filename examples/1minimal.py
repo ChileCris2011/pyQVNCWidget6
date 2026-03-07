@@ -1,14 +1,14 @@
 """
-Minimal example for QVNCWidget (v0.3.0)
+Minimal example for QVNCWidget6 (v0.1.0)
 """
 
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from qvncwidget import QVNCWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from qvncwidget6 import QVNCWidget
 
 class Window(QMainWindow):
     def __init__(self):
-        super(Window, self).__init__()
+        super().__init__()
 
         self.setWindowTitle("QVNCWidget")
 
@@ -36,4 +36,4 @@ window = Window()
 window.resize(800, 600)
 window.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())
