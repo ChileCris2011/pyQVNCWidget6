@@ -1,18 +1,19 @@
 [project]
-name = "QVncWidget6"
-version = "0.1.0"
-description = "VNC QT Widget for Python using PyQt6"
+name = "qvncwidget6"
+version = "0.1.2"
+description = "VNC Qt Widget for Python using PyQt6"
 authors = [
-    { name = "zocker_160", email = "zocker1600@posteo.net"}
+    { name = "zocker_160", email = "zocker1600@posteo.net"},
     { name = "ThevianDex", email = "mekagpt+thevian@gmail.com"}
 ]
 license = "GPLv3+"
 readme = "README.md"
 
+requires-python = ">=3.9"
+
 dependencies = [
-    "python>=3.9",
     "PyQt6~=6.10",
-    "service-identity~=21.1"
+    "service-identity~=21.1",
     "pyDes~=2.0"
 ]
 
