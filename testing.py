@@ -8,7 +8,11 @@ from PyQt6.QtGui import QKeyEvent
 #from qvncwidget import QVNCWidget
 from qvncwidget6.qvncwidget6 import QVNCWidget, QVNCWidgetGL
 
-log = logging.getLogger("testing")
+logging.basicConfig(
+    filename="latest.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 class Window(QMainWindow):
     def __init__(self, app: QApplication):

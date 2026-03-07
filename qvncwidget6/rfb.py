@@ -254,7 +254,7 @@ class RFBClient:
         # first request is non incremental
         self.framebufferUpdateRequest(incremental=False)
 
-        while not self._stop and self.connection:
+        while (not self._stop) and self.connection:
             try:
                 dType = self.__recv(1)
 
