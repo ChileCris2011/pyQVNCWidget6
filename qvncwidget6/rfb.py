@@ -487,4 +487,7 @@ class RFBClient:
 
         you can try to reconnect here with reconnect()
         """
+
+        logging.fatal(str(error))
+
         raise error
