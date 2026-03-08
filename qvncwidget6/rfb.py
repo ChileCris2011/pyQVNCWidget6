@@ -51,7 +51,9 @@ KNOWN_VERSIONS = [
 """
 
 SUPPORTED_ENCODINGS = [
-    c.ENC_RAW
+    c.ENC_RAW,
+    c.ENC_DESKTOPSIZE,
+    c.ENC_EXT_DESKTOPSIZE
 ]
 
 MAX_BUFF_SIZE: int = 10*1024*1024 # 10MB
@@ -326,10 +328,34 @@ class RFBClient:
         self.onFramebufferUpdateFinished()
 
     def _handleRectangle(self, data: bytes):
-        xPos, yPos, width, height, encoding = s.unpack("!HHHHI", data)
+        xPos, yPos, width, height, encoding = s.unpack("!HHHH i", data)
 
         rect = RFBRectangle(xPos, yPos, width, height)
         self.log.debug(f"RECT: {rect}")
+
+        if encoding == c.ENC_DESKTOPSIZE:
+            self.log.info(f"Desktop resized to {width}x{height}")
+
+            self.vncWidth = width
+            self.vncHeight = height
+
+            self.onDesktopSize(width, height)
+            return
+
+        if encoding == c.ENC_EXT_DESKTOPSIZE:
+            self.log.info(f"Extended Desktop Size to {width}x{height}")
+            
+            # Read num screens (1 byte) + 3 bytes padding
+            data = self.__recv(4)
+            num_screens = data[0]
+            # Read screen details (16 bytes per screen)
+            self.__recv(num_screens * 16)
+
+            self.vncWidth = width
+            self.vncHeight = height
+
+            self.onDesktopSize(width, height)
+            return
 
         if encoding == c.ENC_RAW:
             size = (width*height*self.pixformat.bitspp) // 8
@@ -450,6 +476,11 @@ class RFBClient:
         """
         called before a series of updateRectangle(),
         copyRectangle() or fillRectangle().
+        """
+
+    def onDesktopSize(self, width: int, height: int):
+        """
+        called when the server changes framebuffer size
         """
 
     def onRectangleUpdate(self,

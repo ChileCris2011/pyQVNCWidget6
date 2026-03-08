@@ -13,6 +13,7 @@ ENC_ZRLE     = 16 # ZRLE
 # pseudo-encodings
 ENC_CURSOR      = -239 # Cursor position pseudo-encoding
 ENC_DESKTOPSIZE = -223 # DesktopSize pseudo-encoding
+ENC_EXT_DESKTOPSIZE = -308 # ExtendedDesktopSize pseudo-encoding
 
 # additional
 ENC_CORRE   = 4

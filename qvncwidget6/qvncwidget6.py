@@ -41,16 +41,17 @@ log = logging.getLogger("QVNCWidget")
 
 class QVNCWidget(QWidget, RFBClient):
 
-    onInitialResize = pyqtSignal(QSize)
+    onResize = pyqtSignal(QSize)
 
     def __init__(self, parent: QWidget,
                  host: str, port = 5900, password: str = None,
-                 readOnly = False):
+                 readOnly = False, autoResize = False):
         super().__init__(
             parent=parent,
             host=host, port=port, password=password
         )
         self.readOnly = readOnly
+        self.autoResize = autoResize
 
         self.backbuffer: QImage = None
         self.frontbuffer: QImage = None
@@ -66,6 +67,11 @@ class QVNCWidget(QWidget, RFBClient):
     def stop(self):
         self.closeConnection()
 
+    def sizeHint(self):
+        if self.backbuffer:
+            return QSize(self.vncWidth, self.vncHeight)
+        return super().sizeHint()
+
     def onConnectionMade(self):
         log.info("VNC handshake done")
 
@@ -79,7 +85,36 @@ class QVNCWidget(QWidget, RFBClient):
         #self.PIX_FORMAT = QImage.Format.Format_RGB16
 
         self.backbuffer = QImage(self.vncWidth, self.vncHeight, self.PIX_FORMAT)
-        self.onInitialResize.emit(QSize(self.vncWidth, self.vncHeight))
+
+        if self.autoResize:
+            log.info(f"Auto-resizing to initial {self.vncWidth}x{self.vncHeight}")
+            self.setFixedSize(self.vncWidth, self.vncHeight)
+            self.updateGeometry()
+
+        self.onResize.emit(QSize(self.vncWidth, self.vncHeight))
+
+    def onDesktopSize(self, width, height):
+
+        log.info(f"Resizing framebuffer to {width}x{height}")
+
+        newbuf = QImage(width, height, self.PIX_FORMAT)
+        newbuf.fill(Qt.GlobalColor.black)
+
+        if self.backbuffer:
+            p = QPainter(newbuf)
+            p.drawImage(0, 0, self.backbuffer)
+            p.end()
+
+        self.backbuffer = newbuf
+        self.vncWidth = width
+        self.vncHeight = height
+
+        if self.autoResize:
+            log.info(f"Auto-resizing to {width}x{height}")
+            self.setFixedSize(width, height)
+            self.updateGeometry()
+
+        self.onResize.emit(QSize(width, height))
 
     def onRectangleUpdate(self,
             x: int, y: int, width: int, height: int, data: bytes):
@@ -165,7 +200,7 @@ class QVNCWidgetGL(QOpenGLWidget, RFBClient):
 
     IMG_FORMAT = QImage.Format.Format_RGB32
 
-    onInitialResize = pyqtSignal(QSize)
+    onResize = pyqtSignal(QSize)
     #onUpdatePixmap = pyqtSignal(int, int, int, int, bytes)
     onUpdatePixmap = pyqtSignal()
     onSetPixmap = pyqtSignal()
@@ -212,7 +247,7 @@ class QVNCWidgetGL(QOpenGLWidget, RFBClient):
         log.info("VNC handshake done")
 
         self.setPixelFormat(RFBPixelformat.getRGB32())
-        self.onInitialResize.emit(QSize(self.vncWidth, self.vncHeight))
+        self.onResize.emit(QSize(self.vncWidth, self.vncHeight))
         self._initKeypress()
         self._initMouse()
 
@@ -449,7 +484,7 @@ class QVNCWidget_old(QLabel, RFBClient):
     
     IMG_FORMAT = QImage.Format.Format_RGB32
 
-    onInitialResize = pyqtSignal(QSize)
+    onResize = pyqtSignal(QSize)
     onUpdatePixmap = pyqtSignal(int, int, int, int, bytes)
     onSetPixmap = pyqtSignal()
 
@@ -497,7 +532,7 @@ class QVNCWidget_old(QLabel, RFBClient):
         if self.screenPainter: self.screenPainter.end()
 
     def onConnectionMade(self):
-        self.onInitialResize.emit(QSize(self.vncWidth, self.vncHeight))
+        self.onResize.emit(QSize(self.vncWidth, self.vncHeight))
         self.setPixelFormat(RFBPixelformat.getRGB32())
         self._initKeypress()
         self._initMouse()

@@ -35,14 +35,15 @@ class Window(QMainWindow):
             parent=self,
             host="127.0.0.1", port=5900,
             password="1234",
-            readOnly=True
+            readOnly=True #, autoResize = True
         )
 
         self.setCentralWidget(self.vnc)
 
         # if you want to resize the window to the resolution of the 
-        # VNC remote device screen, you can do this
-        self.vnc.onInitialResize.connect(self.resize)
+        # VNC remote device screen, you can do this, but before you
+        # must specify `autoResize=True` when creating the instance
+        self.vnc.onResize.connect(self.resize)
 
         self.vnc.start()
 

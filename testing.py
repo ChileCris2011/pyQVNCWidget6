@@ -5,7 +5,8 @@ import logging
 
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtGui import QKeyEvent
-#from qvncwidget import QVNCWidget
+from PyQt6.QtCore import QSize
+#from qvncwidget6 import QVNCWidget
 from qvncwidget6.qvncwidget6 import QVNCWidget, QVNCWidgetGL
 
 logging.basicConfig(
@@ -28,12 +29,13 @@ class Window(QMainWindow):
         self.vnc = QVNCWidget(
             parent=self,
             host="127.0.0.1", port=5900,
-            readOnly=False
+            readOnly=False,
+            autoResize=True
         )
         
         self.setCentralWidget(self.vnc)
         #self.vnc.setFocus()
-        #self.vnc.onInitialResize.connect(self.resize)
+        self.vnc.onResize.connect(self.resize)
         self.vnc.start()
 
     def keyPressEvent(self, ev: QKeyEvent):
@@ -53,7 +55,6 @@ class Window(QMainWindow):
         cp = self.app.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
 
 logging.basicConfig(
     format="[%(name)s] %(levelname)s: %(message)s", level=logging.DEBUG
