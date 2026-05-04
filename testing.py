@@ -1,10 +1,12 @@
 #! /usr/bin/env python3
 
+## This is just an internal testing file. Ignore it ;)
+
 import sys
 import logging
 
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.QtGui import QKeyEvent
+from PyQt6.QtGui import QKeyEvent, QShortcut, QKeySequence
 from PyQt6.QtCore import QSize
 #from qvncwidget6 import QVNCWidget
 from qvncwidget6.qvncwidget6 import QVNCWidget, QVNCWidgetGL
@@ -32,11 +34,23 @@ class Window(QMainWindow):
             readOnly=False,
             autoResize=True
         )
-        
         self.setCentralWidget(self.vnc)
-        #self.vnc.setFocus()
+        self.vnc.setFocus()
+        self.vnc.setMouseTracking(False)
         self.vnc.onResize.connect(self.resize)
         self.vnc.start()
+        self.shortcut = QShortcut(QKeySequence("Ctrl+L"), self)
+        self.shortcut.activated.connect(self.toggle_restriction)
+    
+    def toggle_restriction(self):
+        self.vnc.restricting = not self.vnc.restricting
+        print("Restriction:", self.vnc.restricting)
+    
+    def mousePressEvent(self, a0):
+        self.vnc.mousePressEvent(a0)
+    
+    def mouseReleaseEvent(self, a0):
+        self.vnc.mouseReleaseEvent(a0)
 
     def keyPressEvent(self, ev: QKeyEvent):
         #print(ev.nativeScanCode(), ev.text(), ord(ev.text()), ev.key())

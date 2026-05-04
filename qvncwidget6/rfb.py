@@ -427,6 +427,16 @@ class RFBClient:
         """
         if not self._connected: return
 
+        if x < 0:
+            x = 0
+        if y < 0:
+            y = 0
+
+        if x > 65535:
+            x = 65535
+        if y > 65535:
+            y = 65535
+
         self.log.debug(f"pointerEvent: {x}, {y}, {buttommask}")
         self.__send(s.pack("!BBHH", c.CMSG_POINTEREVENT, buttommask, x, y))
 

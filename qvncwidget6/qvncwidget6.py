@@ -11,6 +11,8 @@ import time
 from PyQt6.QtCore import (
     QSize,
     Qt,
+    QTimer,
+    QPoint,
     pyqtSignal,
     QSemaphore
 )
@@ -23,13 +25,13 @@ from PyQt6.QtGui import (
     QPixmap,
     QResizeEvent,
     QKeyEvent,
-    QMouseEvent
+    QMouseEvent,
+    QCursor
 )
 
 from PyQt6.QtWidgets import (
     QWidget,
-    QLabel,
-    QWidget
+    QLabel
 )
 
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
@@ -45,13 +47,16 @@ class QVNCWidget(QWidget, RFBClient):
 
     def __init__(self, parent: QWidget,
                  host: str, port = 5900, password: str = None,
-                 readOnly = False, autoResize = False):
+                 readOnly = False, autoResize = False, restrict = False):
         super().__init__(
             parent=parent,
             host=host, port=port, password=password
         )
         self.readOnly = readOnly
         self.autoResize = autoResize
+        self.restricting = restrict
+
+        self.virtual_pos = QPoint(500, 300)
 
         self.backbuffer: QImage = None
         self.frontbuffer: QImage = None
@@ -60,6 +65,40 @@ class QVNCWidget(QWidget, RFBClient):
         self.setMinimumSize(1, 1) # make window scalable
 
         self.mouseButtonMask = 0
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self._update_cursor)
+        self.timer.start(10)
+
+    def _update_cursor(self):
+        if not self.restricting or not self.frontbuffer:
+            return
+
+        center = self.center_global()
+        current = QCursor.pos()
+
+        delta = current - center
+
+        rect = self.rect()
+
+        new_x = self.virtual_pos.x() + delta.x()
+        new_y = self.virtual_pos.y() + delta.y()
+
+        clamped_x = max(0, min(new_x, rect.width()))
+        clamped_y = max(0, min(new_y, rect.height()))
+
+        self.virtual_pos.setX(clamped_x)
+        self.virtual_pos.setY(clamped_y)
+
+        if not self.readOnly:
+            self.pointerEvent(int((self.virtual_pos.x() / self.frontbuffer.width()) * self.vncWidth), int((self.virtual_pos.y() / self.frontbuffer.height()) * self.vncHeight), self.mouseButtonMask)
+
+        QCursor.setPos(center)
+        
+    def center_global(self):
+        rect = self.rect()
+        center = rect.center()
+        return self.mapToGlobal(center)
 
     def start(self):
         self.startConnection()
@@ -166,16 +205,26 @@ class QVNCWidget(QWidget, RFBClient):
     def mousePressEvent(self, ev: QMouseEvent):
         if self.readOnly or not self.frontbuffer: return
         self.mouseButtonMask = RFBInput.fromQMouseEvent(ev, True, self.mouseButtonMask)
-        self.pointerEvent(*self._getRemoteRel(ev), self.mouseButtonMask)
+        if self.restricting:
+            self.pointerEvent(int((self.virtual_pos.x() / self.frontbuffer.width()) * self.vncWidth), int((self.virtual_pos.y() / self.frontbuffer.height()) * self.vncHeight), self.mouseButtonMask)
+        else:
+            self.pointerEvent(*self._getRemoteRel(ev), self.mouseButtonMask)
 
     def mouseReleaseEvent(self, ev: QMouseEvent):
         if self.readOnly or not self.frontbuffer: return
         self.mouseButtonMask = RFBInput.fromQMouseEvent(ev, False, self.mouseButtonMask)
-        self.pointerEvent(*self._getRemoteRel(ev), self.mouseButtonMask)
+        if self.restricting:
+            self.pointerEvent(int((self.virtual_pos.x() / self.frontbuffer.width()) * self.vncWidth), int((self.virtual_pos.y() / self.frontbuffer.height()) * self.vncHeight), self.mouseButtonMask)
+        else:
+            self.pointerEvent(*self._getRemoteRel(ev), self.mouseButtonMask)
 
     def mouseMoveEvent(self, ev: QMouseEvent):
         if self.readOnly or not self.frontbuffer: return
-        self.pointerEvent(*self._getRemoteRel(ev), self.mouseButtonMask)
+
+        if self.restricting:
+            self.pointerEvent(int((self.virtual_pos.x() / self.frontbuffer.width()) * self.vncWidth), int((self.virtual_pos.y() / self.frontbuffer.height()) * self.vncHeight), self.mouseButtonMask)
+        else:
+            self.pointerEvent(*self._getRemoteRel(ev), self.mouseButtonMask)
 
     def _getRemoteRel(self, ev: QMouseEvent) -> tuple:
         xPos = (ev.position().x() / self.frontbuffer.width()) * self.vncWidth
