@@ -112,7 +112,7 @@ class QVNCWidget(QWidget, RFBClient):
         return super().sizeHint()
 
     def onConnectionMade(self):
-        log.info("VNC handshake done")
+        log.debug("VNC handshake done")
 
         self.setPixelFormat(RFBPixelformat.getRGB32())
         self.PIX_FORMAT = QImage.Format.Format_RGB32
@@ -126,7 +126,7 @@ class QVNCWidget(QWidget, RFBClient):
         self.backbuffer = QImage(self.vncWidth, self.vncHeight, self.PIX_FORMAT)
 
         if self.autoResize:
-            log.info(f"Auto-resizing to initial {self.vncWidth}x{self.vncHeight}")
+            log.debug(f"Auto-resizing to initial {self.vncWidth}x{self.vncHeight}")
             self.setFixedSize(self.vncWidth, self.vncHeight)
             self.updateGeometry()
 
@@ -134,7 +134,7 @@ class QVNCWidget(QWidget, RFBClient):
 
     def onDesktopSize(self, width, height):
 
-        log.info(f"Resizing framebuffer to {width}x{height}")
+        log.debug(f"Resizing framebuffer to {width}x{height}")
 
         newbuf = QImage(width, height, self.PIX_FORMAT)
         newbuf.fill(Qt.GlobalColor.black)
@@ -149,7 +149,7 @@ class QVNCWidget(QWidget, RFBClient):
         self.vncHeight = height
 
         if self.autoResize:
-            log.info(f"Auto-resizing to {width}x{height}")
+            log.debug(f"Auto-resizing to {width}x{height}")
             self.setFixedSize(width, height)
             self.updateGeometry()
 
@@ -293,7 +293,7 @@ class QVNCWidgetGL(QOpenGLWidget, RFBClient):
         self.closeConnection()
 
     def onConnectionMade(self):
-        log.info("VNC handshake done")
+        log.debug("VNC handshake done")
 
         self.setPixelFormat(RFBPixelformat.getRGB32())
         self.onResize.emit(QSize(self.vncWidth, self.vncHeight))

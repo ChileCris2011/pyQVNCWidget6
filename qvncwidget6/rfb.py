@@ -130,7 +130,7 @@ class RFBClient:
 
         if b'\n' in buffer and buffer.startswith(b'RFB'):
             maj, min = [int(x) for x in buffer[3:-1].split(b'.')]
-            self.log.info(f"RFB from server: {maj}.{min}")
+            self.log.debug(f"RFB from server: {maj}.{min}")
 
             if (maj, min) not in KNOWN_VERSIONS:
                 raise RFBUnknownVersion(f"Unknown RFB version by server: {maj}.{min}")
@@ -212,7 +212,7 @@ class RFBClient:
     def _handleVNCAuth(self, data: bytes):
         self._VNCAuthChallenge = data
 
-        self.log.info("Requesting password")
+        self.log.debug("Requesting password")
         self.vncRequestPassword()
         self._handleVNCAuthResult(self.__recv(4))
 
@@ -334,7 +334,7 @@ class RFBClient:
         self.log.debug(f"RECT: {rect}")
 
         if encoding == c.ENC_DESKTOPSIZE:
-            self.log.info(f"Desktop resized to {width}x{height}")
+            self.log.debug(f"Desktop resized to {width}x{height}")
 
             self.vncWidth = width
             self.vncHeight = height
@@ -343,7 +343,7 @@ class RFBClient:
             return
 
         if encoding == c.ENC_EXT_DESKTOPSIZE:
-            self.log.info(f"Extended Desktop Size to {width}x{height}")
+            self.log.debug(f"Extended Desktop Size to {width}x{height}")
             
             # Read num screens (1 byte) + 3 bytes padding
             data = self.__recv(4)
